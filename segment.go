@@ -114,7 +114,7 @@ func Segment(text string, wordprob func(string) float64) []string {
 		return res
 	}
 
-	candidates := make([][]string, 0) //how much should I allocate? Effing sucks to have to define it...
+	candidates := make([][]string, 0)
 	for _, sp := range splits(text) {
 		candidates = append(candidates, append([]string{sp.Head}, Segment(sp.Tail, wordprob)...))
 	}
