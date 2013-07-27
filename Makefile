@@ -1,16 +1,25 @@
-bin/segment: *.go
-	go build -o bin/segment
+BIN=$(GOPATH)/bin
 
-bin/test-segment: *.go
+$(BIN)/segment: *.go
+	go build -o $(BIN)/segment
+
+$(BIN)/test-segment: *.go
 	go test -c
-	mv segment.test bin/test-segment
+	mv segment.test $(BIN)/test-segment
 
-run: bin/segment
-	./bin/segment
-
-test: bin/test-segment
+test: $(BIN)/test-segment
 ifdef TEST
-	bin/test-segment -test.run="$(TEST)"
+	$(BIN)/test-segment -test.run="$(TEST)"
 else
-	bin/test-segment -test.v
+	$(BIN)/test-segment -test.v
 endif
+
+format:
+	gofmt -w *.go
+
+lint:
+	go get github.com/golang/lint/golint
+	$(BIN)/golint *.go
+	go vet
+
+.PHONY: test format lint
