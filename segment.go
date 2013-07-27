@@ -1,3 +1,5 @@
+// Package segment provides an implementation of Norvig's recursive word
+// segmenter given in http://norvig.com/ngrams/ch14.pdf
 package segment
 
 import (
@@ -97,6 +99,7 @@ func splits(text string) []split {
 var seen map[string][]string
 
 // Segment a string. Return the highest-scoring segmentation of that string
+// given the word probability function wordprob.
 func Segment(text string, wordprob func(string) float64) []string {
 	if seen == nil {
 		seen = make(map[string][]string)
