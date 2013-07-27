@@ -2,9 +2,78 @@ package main
 
 import (
 	"fmt"
+	"math"
+	"os"
+	"io/ioutil"
+	"regexp"
+	"strings"
 )
 
-func maxPword(words [][]string) []string {
+func getProbs(filename string) map[string]float64 {
+	//just read the whole stupid file into memory
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		fmt.Println("Unable to read file", filename)
+		os.Exit(1)
+	}
+
+	//split the file into words
+	s := regexp.MustCompile(`\s`).Split(string(content), -1)
+
+	//increment the counter by inc every time we encounter a word
+	inc := 1.0/float64(len(s))
+
+	wordprobs := make(map[string]float64)
+
+	for _, word := range s {
+		word = strings.ToLower(strings.Trim(word, ",-!;:\"?."))
+		_, ok := wordprobs[word]
+		if ok {
+			wordprobs[word] += inc
+		} else {
+			wordprobs[word] = inc
+		}
+	}
+
+	return wordprobs
+}
+
+func guessProb(word string, n int) float64 {
+	return float64(10)/(float64(n) * math.Pow(10, float64(len(word))))
+}
+
+func makeWordProb(filename string) func(string) float64 {
+	wordprobs := getProbs(filename)
+
+	return func(word string) float64 {
+		score, ok := wordprobs[word]
+		if ok {
+			return score
+		} else {
+			return guessProb(word, len(wordprobs))
+		}
+	}
+}
+
+func maxPword(words [][]string, wordprob func(string) float64) []string {
+	var max []string
+	maxscore := float64(-1)
+
+	for _, candidate := range words {
+		totalscore := float64(1)
+		for _, word := range candidate {
+			totalscore *= wordprob(word)
+		}
+
+		if totalscore > maxscore {
+			max = candidate
+			maxscore = totalscore
+		}
+		fmt.Println("candidate", candidate, totalscore)
+	}
+
+	fmt.Println("returning max", max)
+	return max
 }
 
 type split struct {
@@ -16,7 +85,7 @@ type split struct {
 func splits(text string) []split {
 	var res []split
 
-	for i := range(text) {
+	for i := range text {
 		res = append(res, split{text[:i+1], text[i+1:]})
 	}
 
@@ -26,7 +95,7 @@ func splits(text string) []split {
 var seen map[string][]string = map[string][]string{}
 
 // Given a string, return the highest-scoring segmentation of that string
-func segment(text string) []string {
+func segment(text string, wordprob func(string) float64) []string {
 	if len(text) == 0 { return []string{} }
 
 	res, ok := seen[text]
@@ -35,15 +104,16 @@ func segment(text string) []string {
 	}
 
 	candidates := make([][]string, 0) //how much should I allocate? Effing sucks to have to define it...
-	for _, sp := range(splits(text)) {
-		candidates = append(candidates, append([]string{sp.Head}, segment(sp.Tail)...))
+	for _, sp := range splits(text) {
+		candidates = append(candidates, append([]string{sp.Head}, segment(sp.Tail, wordprob)...))
 	}
 
-	seen[text] := maxPword(candidates)
+	seen[text] = maxPword(candidates, wordprob)
 
-	return []string{}
+	return seen[text]
 }
 
 func main() {
-	fmt.Println(segment("thereareshortpeopleeverywhere"))
+	wordp := makeWordProb("mobydick.txt")
+	fmt.Println(segment("thereareshortpeopleeverywhere", wordp))
 }
