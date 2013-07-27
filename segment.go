@@ -112,7 +112,7 @@ var seen *lfucache.Cache
 // given the word probability function wordprob.
 func Segment(text string, wordprob func(string) float64) []string {
 	if seen == nil {
-		seen = lfucache.Create(CACHE_SIZE)
+		seen = lfucache.Create(CacheSize)
 	}
 
 	if len(text) == 0 {
