@@ -1,6 +1,7 @@
 BIN=$(GOPATH)/bin
 
 $(BIN)/segment: *.go
+	go get github.com/calmh/lfucache
 	go build -o $(BIN)/segment
 
 $(BIN)/test-segment: *.go
