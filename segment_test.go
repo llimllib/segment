@@ -2,6 +2,7 @@ package segment
 
 import (
 	"testing"
+	"fmt"
 )
 
 func sliceEq(a, b []string) bool {
@@ -25,4 +26,11 @@ func TestSegment(t *testing.T) {
 	if !sliceEq(seg, []string{"there", "are", "short", "people", "everywhere"}) {
 		t.FailNow()
 	}
+}
+
+func ExampleSegment() {
+	wordp := MakeWordProb("mobydick.txt")
+	fmt.Println(Segment("thereareshortpeopleeverywhere", wordp))
+	// Output:
+	// [there are short people everywhere]
 }
