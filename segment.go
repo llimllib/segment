@@ -40,8 +40,11 @@ func getProbs(filename string) map[string]float64 {
 	return wordprobs
 }
 
+// guessProb returns the probability for a word that's not in our
+// corpus. It favors short strings. 10/(n * 10**l)
 func guessProb(word string, n int) float64 {
-	return float64(10) / (float64(n) * math.Pow(10, float64(len(word))))
+	l := float64(len(word))
+	return 10 / (float64(n) * math.Pow(10, l))
 }
 
 // MakeWordProb makes a word probability function from a file.
