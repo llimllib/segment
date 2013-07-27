@@ -64,12 +64,15 @@ func MakeWordProb(filename string) func(string) float64 {
 	}
 }
 
+// Given an array of candidate segmentations, return the one with the highest
+// probability given by the product of the wordprob(word) for all words
+// in the string
 func maxPword(words [][]string, wordprob func(string) float64) []string {
 	var max []string
 	maxscore := float64(-1)
 
 	for _, candidate := range words {
-		totalscore := float64(1)
+		var totalscore float64 = 1
 		for _, word := range candidate {
 			totalscore *= wordprob(word)
 		}
