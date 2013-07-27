@@ -42,7 +42,7 @@ func guessProb(word string, n int) float64 {
 	return float64(10) / (float64(n) * math.Pow(10, float64(len(word))))
 }
 
-// Make a word probability function from a file.
+// MakeWordProb makes a word probability function from a file.
 //
 // You can create your own word probability function if you want, this
 // just provides a default implementation. The word probability function
@@ -54,9 +54,8 @@ func MakeWordProb(filename string) func(string) float64 {
 		score, ok := wordprobs[word]
 		if ok {
 			return score
-		} else {
-			return guessProb(word, len(wordprobs))
 		}
+		return guessProb(word, len(wordprobs))
 	}
 }
 
@@ -95,10 +94,14 @@ func splits(text string) []split {
 	return res
 }
 
-var seen map[string][]string = map[string][]string{}
+var seen map[string][]string
 
-// Given a string, return the highest-scoring segmentation of that string
+// Segment a string. Return the highest-scoring segmentation of that string
 func Segment(text string, wordprob func(string) float64) []string {
+	if seen == nil {
+		seen = make(map[string][]string)
+	}
+
 	if len(text) == 0 {
 		return []string{}
 	}
