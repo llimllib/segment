@@ -1,4 +1,4 @@
-package main
+package segment
 
 import (
 	"fmt"
@@ -42,7 +42,12 @@ func guessProb(word string, n int) float64 {
 	return float64(10)/(float64(n) * math.Pow(10, float64(len(word))))
 }
 
-func makeWordProb(filename string) func(string) float64 {
+// Make a word probability function from a file.
+//
+// You can create your own word probability function if you want, this
+// just provides a default implementation. The word probability function
+// should take any word as an argument and return a float64 0 <= x <= 1
+func MakeWordProb(filename string) func(string) float64 {
 	wordprobs := getProbs(filename)
 
 	return func(word string) float64 {
@@ -69,10 +74,8 @@ func maxPword(words [][]string, wordprob func(string) float64) []string {
 			max = candidate
 			maxscore = totalscore
 		}
-		fmt.Println("candidate", candidate, totalscore)
 	}
 
-	fmt.Println("returning max", max)
 	return max
 }
 
@@ -95,7 +98,7 @@ func splits(text string) []split {
 var seen map[string][]string = map[string][]string{}
 
 // Given a string, return the highest-scoring segmentation of that string
-func segment(text string, wordprob func(string) float64) []string {
+func Segment(text string, wordprob func(string) float64) []string {
 	if len(text) == 0 { return []string{} }
 
 	res, ok := seen[text]
@@ -105,15 +108,10 @@ func segment(text string, wordprob func(string) float64) []string {
 
 	candidates := make([][]string, 0) //how much should I allocate? Effing sucks to have to define it...
 	for _, sp := range splits(text) {
-		candidates = append(candidates, append([]string{sp.Head}, segment(sp.Tail, wordprob)...))
+		candidates = append(candidates, append([]string{sp.Head}, Segment(sp.Tail, wordprob)...))
 	}
 
 	seen[text] = maxPword(candidates, wordprob)
 
 	return seen[text]
-}
-
-func main() {
-	wordp := makeWordProb("mobydick.txt")
-	fmt.Println(segment("thereareshortpeopleeverywhere", wordp))
 }
