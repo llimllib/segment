@@ -2,9 +2,9 @@ package segment
 
 import (
 	"fmt"
+	"io/ioutil"
 	"math"
 	"os"
-	"io/ioutil"
 	"regexp"
 	"strings"
 )
@@ -21,7 +21,7 @@ func getProbs(filename string) map[string]float64 {
 	s := regexp.MustCompile(`\s`).Split(string(content), -1)
 
 	//increment the counter by inc every time we encounter a word
-	inc := 1.0/float64(len(s))
+	inc := 1.0 / float64(len(s))
 
 	wordprobs := make(map[string]float64)
 
@@ -39,7 +39,7 @@ func getProbs(filename string) map[string]float64 {
 }
 
 func guessProb(word string, n int) float64 {
-	return float64(10)/(float64(n) * math.Pow(10, float64(len(word))))
+	return float64(10) / (float64(n) * math.Pow(10, float64(len(word))))
 }
 
 // Make a word probability function from a file.
@@ -99,7 +99,9 @@ var seen map[string][]string = map[string][]string{}
 
 // Given a string, return the highest-scoring segmentation of that string
 func Segment(text string, wordprob func(string) float64) []string {
-	if len(text) == 0 { return []string{} }
+	if len(text) == 0 {
+		return []string{}
+	}
 
 	res, ok := seen[text]
 	if ok {

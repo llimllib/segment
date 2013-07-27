@@ -5,15 +5,17 @@ import (
 )
 
 func sliceEq(a, b []string) bool {
-    if len(a) != len(b) {
-        return false
-    }
+	if len(a) != len(b) {
+		return false
+	}
 
-    for i := range a {
-        if a[i] != b[i] { return false }
-    }
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
 
-    return true
+	return true
 }
 
 func TestSegment(t *testing.T) {
