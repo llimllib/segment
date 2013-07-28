@@ -3,38 +3,43 @@
 package segment
 
 import (
+	"bufio"
 	"fmt"
-	"io/ioutil"
 	"math"
 	"os"
-	"regexp"
 	"strings"
 )
 
 func getProbs(filename string) map[string]float64 {
 	//just read the whole stupid file into memory
-	content, err := ioutil.ReadFile(filename)
+	content, err := os.Open(filename)
 	if err != nil {
 		fmt.Println("Unable to read file", filename)
 		os.Exit(1)
 	}
 
-	//split the file into words
-	s := regexp.MustCompile(`\s`).Split(string(content), -1)
-
-	//increment the counter by inc every time we encounter a word
-	inc := 1.0 / float64(len(s))
+	scanner := bufio.NewScanner(content)
+	scanner.Split(bufio.ScanWords)
 
 	wordprobs := make(map[string]float64)
 
-	for _, word := range s {
-		word = strings.ToLower(strings.Trim(word, ",-!;:\"?."))
+	var l float64 = 0
+
+	for scanner.Scan() {
+		word := strings.Trim(scanner.Text(), ",-!;:\"?.")
 		_, ok := wordprobs[word]
 		if ok {
-			wordprobs[word] += inc
+			wordprobs[word] += 1
 		} else {
-			wordprobs[word] = inc
+			wordprobs[word] = 1
 		}
+
+		l++
+	}
+
+	// normalize by # of words
+	for word, val := range wordprobs {
+		wordprobs[word] = val/l
 	}
 
 	return wordprobs
