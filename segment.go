@@ -9,8 +9,6 @@ import (
 	"os"
 	"regexp"
 	"strings"
-
-	"github.com/calmh/lfucache"
 )
 
 func getProbs(filename string) map[string]float64 {
@@ -104,24 +102,18 @@ func splits(text string) []split {
 	return res
 }
 
-// CacheSize is the maximum number of keys segment will keep in its cache
-var CacheSize = 65536
-var seen *lfucache.Cache
+var seen = map[string][]string{}
 
 // Segment a string. Return the highest-scoring segmentation of that string
 // given the word probability function wordprob.
 func Segment(text string, wordprob func(string) float64) []string {
-	if seen == nil {
-		seen = lfucache.Create(CacheSize)
-	}
-
 	if len(text) == 0 {
 		return []string{}
 	}
 
-	res, ok := seen.Access(text)
+	res, ok := seen[text]
 	if ok {
-		return res.([]string)
+		return res
 	}
 
 	candidates := make([][]string, 0)
@@ -130,7 +122,7 @@ func Segment(text string, wordprob func(string) float64) []string {
 	}
 
 	max := maxPword(candidates, wordprob)
-	seen.Insert(text, max)
+	seen[text] = max
 
 	return max
 }
