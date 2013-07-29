@@ -3,6 +3,7 @@ package segment
 import (
 	"testing"
 	"fmt"
+	"os"
 )
 
 func sliceEq(a, b []string) bool {
@@ -19,8 +20,18 @@ func sliceEq(a, b []string) bool {
 	return true
 }
 
+func getFile(filename string) *os.File {
+	f, err := os.Open(filename)
+	if err != nil {
+		fmt.Println("Unable to read file", filename)
+		os.Exit(1)
+	}
+
+	return f
+}
+
 func TestSegment(t *testing.T) {
-	wordp := MakeWordProb("mobydick.txt")
+	wordp := MakeWordProb(getFile("mobydick.txt"))
 	seg := Segment("thereareshortpeopleeverywhere", wordp)
 
 	if !sliceEq(seg, []string{"there", "are", "short", "people", "everywhere"}) {
@@ -29,8 +40,9 @@ func TestSegment(t *testing.T) {
 }
 
 func ExampleSegment() {
-	wordp := MakeWordProb("mobydick.txt")
+	wordp := MakeWordProb(getFile("mobydick.txt"))
 	fmt.Println(Segment("thereareshortpeopleeverywhere", wordp))
 	// Output:
 	// [there are short people everywhere]
 }
+

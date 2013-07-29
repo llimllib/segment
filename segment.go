@@ -4,20 +4,13 @@ package segment
 
 import (
 	"bufio"
-	"fmt"
+	"io"
 	"math"
-	"os"
 	"strings"
 )
 
-func getProbs(filename string) map[string]float64 {
-	content, err := os.Open(filename)
-	if err != nil {
-		fmt.Println("Unable to read file", filename)
-		os.Exit(1)
-	}
-
-	scanner := bufio.NewScanner(content)
+func getProbs(reader io.Reader) map[string]float64 {
+	scanner := bufio.NewScanner(reader)
 	scanner.Split(bufio.ScanWords)
 
 	wordprobs := make(map[string]float64)
@@ -56,8 +49,8 @@ func guessProb(word string, n int) float64 {
 // You can create your own word probability function if you want, this
 // just provides a default implementation. The word probability function
 // should take any word as an argument and return a float64 0 <= x <= 1
-func MakeWordProb(filename string) func(string) float64 {
-	wordprobs := getProbs(filename)
+func MakeWordProb(reader io.Reader) func(string) float64 {
+	wordprobs := getProbs(reader)
 
 	return func(word string) float64 {
 		score, ok := wordprobs[word]

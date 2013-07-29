@@ -2,9 +2,9 @@ A Go language implementation of the Norvig segmenter, given in [this pdf](http:/
 
 Licensed WTFPL; please use this code in any way you would like.
 
-### func MakeWordProb(filename string) func(string) float64
+### func MakeWordProb(reader io.Reader) func(string) float64
 
-MakeWordProb makes a word probability function from a file.
+MakeWordProb makes a word probability function from a reader.
 
 You can create your own word probability function if you want, this just provides a default implementation. The word probability function should take any word as an argument and return a float64 0 &lt;= x &lt;= 1
 
@@ -20,10 +20,21 @@ package main
 import (
 	"segment"
 	"fmt"
+	"os"
 )
 
+func getFile(filename string) *os.File {
+	f, err := os.Open(filename)
+	if err != nil {
+		fmt.Println("Unable to read file", filename)
+		os.Exit(1)
+	}
+
+	return f
+}
+
 func main() {
-	wordp := segment.MakeWordProb("mobydick.txt")
+	wordp := segment.MakeWordProb(getFile("mobydick.txt"))
 	fmt.Println(segment.Segment("thereareshortpeopleeverywhere", wordp))
 	// Output:
 	// [there are short people everywhere]
