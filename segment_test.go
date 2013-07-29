@@ -1,9 +1,9 @@
 package segment
 
 import (
-	"testing"
 	"fmt"
 	"os"
+	"testing"
 )
 
 func sliceEq(a, b []string) bool {
@@ -45,4 +45,3 @@ func ExampleSegment() {
 	// Output:
 	// [there are short people everywhere]
 }
-

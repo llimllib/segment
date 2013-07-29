@@ -31,7 +31,7 @@ func getProbs(reader io.Reader) map[string]float64 {
 
 	// normalize by # of words
 	for word, val := range wordprobs {
-		wordprobs[word] = val/l
+		wordprobs[word] = val / l
 	}
 
 	return wordprobs
