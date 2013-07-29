@@ -15,7 +15,7 @@ func getProbs(reader io.Reader) map[string]float64 {
 
 	wordprobs := make(map[string]float64)
 
-	var l float64 = 0
+	var l float64
 
 	for scanner.Scan() {
 		word := strings.Trim(scanner.Text(), ",-!;:\"?.")
