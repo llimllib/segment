@@ -11,7 +11,6 @@ import (
 )
 
 func getProbs(filename string) map[string]float64 {
-	//just read the whole stupid file into memory
 	content, err := os.Open(filename)
 	if err != nil {
 		fmt.Println("Unable to read file", filename)
